@@ -1,0 +1,40 @@
+{
+	"markdown": {
+		"custom_template_id": "102102513_1713490793",
+		"params": [
+			{
+				"key": "title",
+				"values": [
+					"是时候摸会鱼啦~"
+				]
+			},
+			{
+				"key": "w",
+				"values": [
+					"1242"
+				]
+			},
+			{
+				"key": "h",
+				"values": [
+					"2208"
+				]
+			},
+			{
+				"key": "img",
+				"values": [
+					"https://api.lyhc.top/bot/a.jpg"
+				]
+			},
+			{
+				"key": "content",
+				"values": [
+					"摸鱼人"
+				]
+			}
+		]
+	},
+	"msg_type": 2,
+	"bot_appid": 102102513,
+	"msg_id": ""
+}

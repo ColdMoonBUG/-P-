@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>请假条生成器</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery.datetimepicker.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.datetimepicker.full.min.js"></script>
+
+    <style>
+        body {
+            padding-top: 50px;
+        }
+
+        .container {
+            max-width: 600px;
+            /* 对于大屏幕，您可能想要限制最大宽度 */
+            margin-left: auto;
+            margin-right: auto;
+            /* 这二者将容器在大屏幕上居中显示 */
+        }
+
+        .datetime {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .datetime .input-group {
+            width: 100%;
+        }
+
+        .datetime .input-group input[type='text'] {
+            width: calc(100% - 90px);
+        }
+
+        .datetime .input-group-append {
+            width: 90px;
+        }
+
+        .img-preview {
+            margin-top: 20px;
+        }
+
+        .btn-outline-secondary {
+            border-width: 2px;
+        }
+
+        .datetimepicker-input {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            border: 1px solid #ced4da;
+        }
+
+        .datetime .input-group {
+            display: flex;
+            /* 这确保了文本框和按钮在同一行 */
+        }
+
+        .datetime .input-group input[type='text'] {
+            flex: 1 0 75%;
+            /* 文本框占据剩余空间的75% */
+        }
+
+        .datetime .input-group-append {
+            flex: 0 0 25%;
+            /* 按钮占据剩余空间的25% */
+            display: flex;
+            /* 使内部按钮填充空间 */
+        }
+
+        .datetime .input-group-append button {
+            width: 100%;
+            /* 按钮宽度填充整个.input-group-append容器 */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .container {
+            max-width: 90%;
+        }
+
+        .datetime .input-group input[type='text'],
+        .datetime .input-group-append {
+            width: 100%;
+            /* 适配小屏幕 */
+        }
+
+        /* 媒体查询 */
+        @media screen and (min-width: 768px) {
+            .datetime .input-group input[type='text'] {
+                width: calc(100% - 90px);
+                /* 桌面屏幕上恢复布局 */
+            }
+        }
+
+        .container {
+            width: 90%;
+            padding-left: 15px;
+            padding-right: 15px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media screen and (min-width: 992px) {
+
+            /* 大屏幕设备 */
+            .container {
+                max-width: 600px;
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            /* 确保图片不会超过容器宽度 */
+            height: auto;
+            /* 保持图片比例 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 图片展示模态 -->
+    <div id="imageModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">请假条预览</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img id="leaveImage" src="" class="img-fluid" alt="请假条" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="container">
+                <!-- 所有内容 -->
+
+
+
+                <div class="container">
+                    <h2 class="text-center">请假条生成器</h2>
+                    <form id="leaveForm">
+                        <div class="form-group">
+                            <label for="studentName">学生姓名:</label>
+                            <input type="text" class="form-control" id="studentName" name="studentName">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="teacherName">导员姓名:</label>
+                            <input type="text" class="form-control" id="teacherName" name="teacherName">
+                        </div>
+
+                        <div class="datetime mb-3">
+                            <label for="startTime">开始时间:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datetimepicker-input" id="startTime"
+                                    name="startTime" placeholder="格式：MM-DD HH:mm">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary current-time" type="button"
+                                        data-target-input="#startTime">当前时间</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="datetime mb-3">
+                            <label for="closeTime">结束时间:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datetimepicker-input" id="closeTime"
+                                    name="closeTime" placeholder="格式：MM-DD HH:mm">
+                                <div class="input-group-append">
+
+
+                                    <button id="closeTimeBtn" class="btn btn-outline-secondary"
+                                        type="button">一天后</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="datetime">
+                            <label for="applicationTime">申请时间:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datetimepicker-input" id="applicationTime"
+                                    name="applicationTime" placeholder="格式：MM-DD HH:mm">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary current-time" type="button"
+                                        data-target-input="#applicationTime">当前时间</button>
+                                </div>
+                            </div>
+
+                            <div class="datetime">
+                                <label for="passTime">审批时间:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control datetimepicker-input" id="passTime"
+                                        name="passTime" placeholder="格式：MM-DD HH:mm">
+                                    <div class="input-group-append">
+                                        <button id="passTimeBtn" class="btn btn-outline-secondary"
+                                            type="button">十分钟后</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="datetime mb-3">
+                                <label for="statusBarTime">状态栏时间:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control datetimepicker-input" id="statusBarTime"
+                                        name="statusBarTime" placeholder="格式：HH:mm">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary current-status-time" type="button"
+                                            data-target-input="#statusBarTime">当前时间</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergencyContacts">紧急联系人:</label>
+                                <input type="text" class="form-control" id="emergencyContacts" name="emergencyContacts">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reasonForLeave">请假原因:</label>
+                                <input type="text" class="form-control" id="reasonForLeave" name="reasonForLeave">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="destination">目的地:</label>
+                                <input type="text" class="form-control" id="destination" name="destination">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="leavingSchool">是否离校:</label>
+                                <select class="form-control" id="leavingSchool" name="leavingSchool">
+                                    <option value="离校">离校</option>
+                                    <option value="否">否</option>
+                                </select>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="button" class="btn btn-primary" id="submitForm">生成请假条</button>
+                            </div>
+                    </form>
+
+                    <div id="result" class="img-preview mt-4 text-center">
+                        <h4>你热爱的，就是你的生活！</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('.form-group, .datetime').addClass('fade-in-element');
+            // 初始化datetimepicker
+            $.datetimepicker.setLocale('zh');
+            $('.datetimepicker-input').datetimepicker({
+                format: 'm-d H:i',
+                step: 10,  // 时间选择器步长设置为10分钟
+                theme: 'dark' // 使用暗色主题
+            });
+
+            // 开始时间按钮填充当前时间
+            $('.current-time').click(function () {
+                var now = new Date();
+                var formatted = ("0" + (now.getMonth() + 1)).slice(-2) + '-'
+                    + ("0" + now.getDate()).slice(-2) + ' '
+                    + ("0" + now.getHours()).slice(-2) + ':'
+                    + ("0" + now.getMinutes()).slice(-2);
+                $($(this).data('target-input')).val(formatted);
+            });
+
+            // 结束时间按钮填充一天后的时间
+            $('#closeTimeBtn').click(function () {
+                var oneDayLater = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+                var formatted = ("0" + (oneDayLater.getMonth() + 1)).slice(-2) + '-'
+                    + ("0" + oneDayLater.getDate()).slice(-2) + ' '
+                    + ("0" + oneDayLater.getHours()).slice(-2) + ':'
+                    + ("0" + oneDayLater.getMinutes()).slice(-2);
+                $('#closeTime').val(formatted);
+            });
+
+            // 审批时间按钮填充十分钟后的时间
+            $('#passTimeBtn').click(function () {
+                var tenMinutesLater = new Date(new Date().getTime() + 10 * 60 * 1000);
+                var formatted = ("0" + (tenMinutesLater.getMonth() + 1)).slice(-2) + '-'
+                    + ("0" + tenMinutesLater.getDate()).slice(-2) + ' '
+                    + ("0" + tenMinutesLater.getHours()).slice(-2) + ':'
+                    + ("0" + tenMinutesLater.getMinutes()).slice(-2);
+                $('#passTime').val(formatted);
+            });
+
+            // 状态栏时间按钮填充当前时间
+            $('.current-status-time').click(function () {
+                var now = new Date();
+                var formattedTime = ("0" + now.getHours()).slice(-2) + ':'
+                    + ("0" + now.getMinutes()).slice(-2);
+                $('#statusBarTime').val(formattedTime);
+            });
+
+            $('#submitForm').click(function () {
+                $(this).addClass('btn-loading').text('正在生成...');
+                var formData = {
+                    'studentName': $('#studentName').val(),
+                    'teacherName': $('#teacherName').val(),
+                    'startTime': $('#startTime').val(),
+                    'closeTime': $('#closeTime').val(),
+                    'applicationTime': $('#applicationTime').val(),
+                    'passTime': $('#passTime').val(),
+                    'statusBarTime': $('#statusBarTime').val(),
+                    'emergencyContacts': $('#emergencyContacts').val(),
+                    'reasonForLeave': $('#reasonForLeave').val(),
+                    'destination': $('#destination').val(),
+                    'leavingSchool': $('#leavingSchool').val()
+                };
+
+                // 将表单数据转换为 JSON 格式
+                var jsonData = JSON.stringify(formData);
+
+                // 发送 POST 请求
+                fetch('http://38.46.31.79:5000/api/editimage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: jsonData
+                })
+                    .then(response => response.blob())
+                    .then(blob => {
+                        // 将 Blob 对象转换为 base64 编码的字符串
+                        var reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = function () {
+                            // 将图片源设置为读取结果，并显示模态
+                            $('#leaveImage').attr('src', reader.result);
+                            $('#imageModal').modal('show');
+                        };
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>
